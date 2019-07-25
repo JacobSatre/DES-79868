@@ -1,4 +1,5 @@
 //retrieve and cache submit button href value
+let overrideList = $('.qfilter-override');
 let submitList = $('.qfilter-submit');
 let hrefList = [];
 for (let i = 0; i < submitList.length; i++) {
@@ -10,7 +11,6 @@ let type = {filterName:"Type",filterValues:[]};
 let year = {filterName:"Year",filterValues:[]};
 let model = {filterName:"Model",filterValues:[]};
 let make = {filterName:"Make",filterValues:[]};
-let pricerange = {filterName:"Pricerange",filterValues:[]};
 let bodystyle = {filterName:"Bodystyle",filterValues:[]};
 let fueltype = {filterName:"Fueltype",filterValues:[]};
 let extcolor = {filterName:"ExtColor",filterValues:[]};
@@ -26,7 +26,7 @@ let carfax1owner = {filterName:"carfax1owner",filterValues:[]};
 let special = {filterName:"special",filterValues:[]};
 
 //categories list
-const categories = [type,year,model,make,pricerange,bodystyle,fueltype,extcolor,mpgcity,mpghighway,transmission,features,pricerange,cylinders,drivetraintype,cpo,carfax1owner,special];
+const categories = [type,year,model,make,bodystyle,fueltype,extcolor,mpgcity,mpghighway,transmission,features,pricerange,cylinders,drivetraintype,cpo,carfax1owner,special];
 
 //manages options/filters
 function sortFilter(option) {
@@ -68,7 +68,7 @@ function buildQuery() {
 				queryString += "&";
 			}
 
-			//add category name and values to querystring
+			//compile filter values
 			filterValues = "";
 			beginCount = false;
 			for (let n = 0; n < categories[i].filterValues.length; n++) {
@@ -79,7 +79,7 @@ function buildQuery() {
 				beginCount = true;
 			}
 
-			//add to total querystring
+			//add category name and filter values to querystring
 			queryString += categories[i].filterName+ "=" + filterValues;
 		}
 	}
@@ -90,8 +90,14 @@ function buildQuery() {
 	//update submit button href
 	for (let i = 0; i < submitList.length; i++) {
 		$(submitList[i]).attr('href',hrefList[i] + queryString);
-		
+
 	}
+}
+
+//gather overrides
+for (let i = 0; i < overrideList.length; i++) {
+	sortFilter(overrideList[i]);
+	buildQuery();
 }
 
 //onclick
