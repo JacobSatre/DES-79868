@@ -33,7 +33,7 @@ function sortFilter(option) {
 
 	//interate through each category
 	for (let i = 0; i < categories.length; i++) {
-		if (option.dataset.filter == categories[i].filterName) {
+		if (option.dataset.filter.toUpperCase() == categories[i].filterName.toUpperCase()) {
 
 			//if category doesn't include option, add it
 			if (categories[i].filterValues.includes(option) == false) {
