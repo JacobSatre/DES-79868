@@ -6,6 +6,9 @@ for (let i = 0; i < submitList.length; i++) {
 	hrefList.push(submitList[i].getAttribute('href'));
 }
 
+//retrieve category filter count elements
+let filterCount = $('.qfilter-filtercount');
+
 //categories
 let type = {filterName:"Type",filterValues:[]};
 let year = {filterName:"Year",filterValues:[]};
@@ -84,6 +87,8 @@ function buildQuery() {
 		}
 	}
 
+	updateFilterCount();
+
 	//replace spaces with %20
 	queryString = queryString.replace(new RegExp(" ", 'g'), "%20");
 
@@ -92,6 +97,21 @@ function buildQuery() {
 		$(submitList[i]).attr('href',hrefList[i] + queryString);
 
 	}
+}
+
+//updates category count of corresponding data-filter
+function updateFilterCount() {
+    for (let k = 0; k < filterCount.length; k++) {
+        for (let j = 0; j < categories.length; j++) {
+            if (filterCount[k].dataset.filter.toUpperCase() == categories[j].filterName.toUpperCase()) {
+            	if (categories[j].filterValues.length > 0) {
+            		$(filterCount[k]).text('('+ categories[j].filterValues.length +')');
+            	} else {
+            		$(filterCount[k]).text('');
+            	} 
+            }
+        }
+    }
 }
 
 //gather overrides
