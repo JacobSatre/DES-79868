@@ -1,62 +1,81 @@
 <style>
-#qfilter-tabs {display:flex;}
-#qfilter-tabs li {display:inline-flex; flex-grow:1;}
-#qfilter-tabs li.active {margin-bottom: -1px;}
-#qfilter-tabs li.active a {color: #C3002F; border-bottom: 0px; background-color: white;}
-#qfilter-tabs li:first-child {padding-left:0px;}
-#qfilter-tabs li:last-child {padding-right:0px;}
-#qfilter-tabs li a {color:white; border-radius:6px 6px 0px 0px;}
+#qfilter-buttons, .qfilter-submit {display:none;}
+#qfilter-tabs li.active a {color: #C3002F; background-color: white;}
+#qfilter-tabs li a {color:white;}
+#qfilter-tabs li a i.fa {border-right:1px solid white; padding-right:5px; margin-right:5px;}
+#qfilter-tabs li.active a i.fa {border-color:#C3002F;}
+ #qfilter-buttons .tab-pane p i {border-right:1px solid #000; padding-right:5px; margin-right:5px;}
 .qfilter-selected {background-color: black!important; color:white!important; border-color:black!important;}
+
 #qfilter-buttons {border:1px solid #C3002F;}
+@media (min-width:768px) {
+	#qfilter-tabs {display:flex;}
+	#qfilter-tabs li {display:inline-flex; flex-grow:1;}
+	#qfilter-tabs li:first-child {padding-left:0px;}
+	#qfilter-tabs li:last-child {padding-right:0px;}
+
+}
 @media (max-width:767px) {
-    #qfilter-tabs li {display:flex;}
+	#qfilter-tabs li {display:flex; padding:5px 0px;}
 }
 </style>
 <div class="Quick Filter">
-    <div class="container pad-vert-2x">
-        <div class="fancyWordCenter">
-            <h2 class="h1 clearfix margin-top-x margin-bottom_5x"><span class="fancyLabel">Quick </span><span class="fancyWord" data-words="Filter?,Search?">Filter?</span></h2>
-        </div>
+	<div class="container text-center pad-vert-2x">
+	<h3 class="margin-top-x margin-bottom-1x text-center">Search By:</h3>
         <ul id="qfilter-tabs" class="text-center margin-x list-inline" role="tablist">
-            <li class="active">
-                <a href="#qfilter-bodystyle" class="btn btn-cta btn-block" role="tab" data-toggle="tab">Bodystyle</a>
+            <li class="">
+                <a href="#qfilter-bodystyle" class="btn btn-cta btn-block" role="tab" data-toggle="tab"><i class="fa fa-car" aria-hidden="true"></i>Bodystyle <span class="qfilter-filtercount" data-filter="Bodystyle"></span></a>
+            </li>
+           	<li class="">
+                <a href="#qfilter-price" class="btn btn-cta btn-block" role="tab" data-toggle="tab"><i class="fa fa-usd" aria-hidden="true"></i>Price <span class="qfilter-filtercount" data-filter="pricerange"></span></a>
             </li>
             <li class="">
-                <a href="#qfilter-fueltype" class="btn btn-cta btn-block" role="tab" data-toggle="tab">Fueltype</a>
+                <a href="#qfilter-fueltype" class="btn btn-cta btn-block" role="tab" data-toggle="tab"><i class="fa fa-database" aria-hidden="true"></i>Fueltype <span class="qfilter-filtercount" data-filter="fueltype"></span></a>
             </li>
             <li class="">
-                <a href="#qfilter-extcolor" class="btn btn-cta btn-block" role="tab" data-toggle="tab">Exterior Color</a>
+                <a href="#qfilter-extcolor" class="btn btn-cta btn-block" role="tab" data-toggle="tab"><i class="fa fa-paint-brush" aria-hidden="true"></i>Exterior Color <span class="qfilter-filtercount" data-filter="extcolor"></span></a>
             </li>
             <li class="">
-                <a href="#qfilter-features" class="btn btn-cta btn-block" role="tab" data-toggle="tab">Features</a>
+                <a href="#qfilter-features" class="btn btn-cta btn-block" role="tab" data-toggle="tab"><i class="fa fa-star" aria-hidden="true"></i>Features <span class="qfilter-filtercount" data-filter="Features"></span></a>
             </li>
         </ul>
-        <div id="qfilter-buttons" class="tab-content text-center pad-vert-1x">
-            <div class="tab-pane fade active in" id="qfilter-bodystyle">
-                <a class="btn btn-default qfilter-option" data-filter="bodystyle" data-value="4D Sedan">Sedan</a>
-                <a class="btn btn-default qfilter-option" data-filter="bodystyle" data-value="coupe">Coupe</a>
-                <a class="btn btn-default qfilter-option" data-filter="bodystyle" data-value="truck">Truck</a>
-                <a class="btn btn-default qfilter-option" data-filter="bodystyle" data-value="crossover">Crossover</a>
-                <a class="btn btn-default qfilter-option" data-filter="bodystyle" data-value="van">Van</a>
-            </div>
-            <div class="tab-pane fade" id="qfilter-fueltype">
-                <a class="btn btn-default qfilter-option" data-filter="fueltype" data-value="gasoline">Gasoline</a>
-                <a class="btn btn-default qfilter-option" data-filter="fueltype" data-value="electric">Electric</a>
-                <a class="btn btn-default qfilter-option" data-filter="fueltype" data-value="hybrid">Hybrid</a>
-            </div>
-            <div class="tab-pane fade" id="qfilter-extcolor">
-                <a class="btn btn-default qfilter-option" data-filter="extcolor" data-value="green">green</a>
-                <a class="btn btn-default qfilter-option" data-filter="extcolor" data-value="blue">Blue</a>
-                <a class="btn btn-default qfilter-option" data-filter="extcolor" data-value="Orange">Orange</a>
-                <a class="btn btn-default qfilter-option" data-filter="extcolor" data-value="Silver">Silver</a>
-            </div>
-            <div class="tab-pane fade" id="qfilter-features">
-                <a class="btn btn-default qfilter-option" data-filter="features" data-value="heated seats">Heated Seats</a>
-                <a class="btn btn-default qfilter-option" data-filter="features" data-value="leather seats">Leather Seats</a>
-                <a class="btn btn-default qfilter-option" data-filter="features" data-value="cruise control">Cruise Control</a>
-                <a class="btn btn-default qfilter-option" data-filter="features" data-value="sunroof">sunroof</a>
-            </div>
-        </div>
-        <a href="searchall.aspx" class="btn btn-main margin-top-1x qfilter-submit pull-right">Search</a>
-    </div>
+	    <div id="qfilter-buttons" class="tab-content text-center pad-vert-1x margin-top-1x margin-bottom-2x">
+	        <div class="tab-pane fade" id="qfilter-bodystyle">
+	        	<p><i class="fa fa-car" aria-hidden="true"></i>Bodystyle</p>
+	        	<a class="btn btn-default qfilter-option" data-filter="Bodystyle" data-value="4D sedan">Sedan</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Bodystyle" data-value="2D coupe">Coupe</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Bodystyle" data-value="4D Double Cab">Truck</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Bodystyle" data-value="4D Sport Utility">SUV</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Bodystyle" data-value="4D Passenger Van">Van</a>
+	        </div>
+	        <div class="tab-pane fade" id="qfilter-price">
+	        	<p><i class="fa fa-usd" aria-hidden="true"></i>Price</p>
+	        	<a class="btn btn-default qfilter-option" data-filter="Pricerange" data-value="10001-20000">10k-20k</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Pricerange" data-value="20001-30000">20k-30k</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Pricerange" data-value="30001-40000">30k-40k</a>
+	        	<a class="btn btn-default qfilter-option" data-filter="Pricerange" data-value="40001-50000">40k-50k</a>
+	        </div>
+	        <div class="tab-pane fade" id="qfilter-fueltype">
+	        	<p><i class="fa fa-database" aria-hidden="true"></i>Fuel Type</p>
+	        	<a class="btn btn-default qfilter-option" data-filter="Fueltype" data-value="Gasoline">Gasoline</a>
+				<a class="btn btn-default qfilter-option" data-filter="FueltYPE" data-value="Diesel">Diesel</a>
+				<a class="btn btn-default qfilter-option" data-filter="Fueltype" data-value="Flex Fuel">Flex Fuel</a>
+	        </div>
+	        <div class="tab-pane fade" id="qfilter-extcolor">
+	        	<p><i class="fa fa-paint-brush" aria-hidden="true"></i>Exterior Color</p>
+	        	<a class="btn btn-default qfilter-option" data-filter="ExtColor" data-value="green">green</a>
+				<a class="btn btn-default qfilter-option" data-filter="ExtColor" data-value="blue">Blue</a>
+				<a class="btn btn-default qfilter-option" data-filter="ExtColor" data-value="Orange">Orange</a>
+				<a class="btn btn-default qfilter-option" data-filter="ExtColor" data-value="Silver">Silver</a>
+	        </div>
+	        <div class="tab-pane fade" id="qfilter-features">
+	        	<p><i class="fa fa-star" aria-hidden="true"></i>Features</p>
+	        	<a class="btn btn-default qfilter-option" data-filter="Features" data-value="Heated Seats">Heated Seats</a>
+				<a class="btn btn-default qfilter-option" data-filter="Features" data-value="Rear View Camera">Rear View Camera</a>
+				<a class="btn btn-default qfilter-option" data-filter="Features" data-value="Cruise Control">Cruise Control</a>
+				<a class="btn btn-default qfilter-option" data-filter="Features" data-value="Sunroof">Sunroof</a>
+	        </div>
+	    </div>
+	    <a href="searchall.aspx" class="btn btn-cta qfilter-submit">Search</a>
+	</div>
 </div>
