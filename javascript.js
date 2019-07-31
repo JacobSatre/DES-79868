@@ -44,6 +44,7 @@ function sortFilter(option) {
 
 				//update page elements
 				addCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
+				updateFilterCount(categories[i].filterName, categories[i].filterValues.length);
 				
 
 			//if category includes option, find and remove it
@@ -54,6 +55,7 @@ function sortFilter(option) {
 
 						//update page elements
 						removeCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
+						updateFilterCount(categories[i].filterName, categories[i].filterValues.length);
 					}
 				}
 			}
@@ -79,8 +81,8 @@ function buildQuery() {
 			}
 
 			//compile filter values
-			filterValues = "";
-			beginCount = false;
+			let filterValues = "";
+			let beginCount = false;
 			for (let n = 0; n < categories[i].filterValues.length; n++) {
 				if (beginCount == true) {
 					filterValues += ",";
@@ -93,8 +95,6 @@ function buildQuery() {
 			queryString += categories[i].filterName+ "=" + filterValues;
 		}
 	}
-
-	updateFilterCount();
 
 	//encode URL
 	queryString = encodeURI(queryString);
@@ -166,23 +166,21 @@ function removeCurrentFilter(value, category, categoryLength) {
 	} else {
 		valueelement.remove();
 	}
-
 }
 
-//updates category count of corresponding data-filter
-function updateFilterCount() {
-    for (let k = 0; k < filterCount.length; k++) {
-        for (let j = 0; j < categories.length; j++) {
-            if (filterCount[k].dataset.filter.toUpperCase() == categories[j].filterName.toUpperCase()) {
-            	if (categories[j].filterValues.length > 0) {
-            		$(filterCount[k]).text('('+ categories[j].filterValues.length +')');
-            	} else {
-            		$(filterCount[k]).text('');
-            	} 
-            }
-        }
-    }
+//updates category count element
+function updateFilterCount(category, categoryLength) {
+	for (let i = 0; i < filterCount.length; i++) {
+		if (filterCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
+			if (categoryLength > 0) {
+				$(filterCount[i]).text('('+ categoryLength +')')
+			} else {
+				$(filterCount[i]).text('');
+			}
+		}
+	}
 }
+
 
 //gather overrides
 for (let i = 0; i < overrideList.length; i++) {
