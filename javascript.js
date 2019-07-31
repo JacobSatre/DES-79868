@@ -89,8 +89,8 @@ function buildQuery() {
 
 	updateFilterCount();
 
-	//replace spaces with %20
-	queryString = queryString.replace(new RegExp(" ", 'g'), "%20");
+	//encode URL
+	queryString = encodeURI(queryString);
 
 	//update submit button href
 	for (let i = 0; i < submitList.length; i++) {
