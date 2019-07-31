@@ -125,7 +125,7 @@ function addCurrentFilter(value, category, categoryLength) {
 	let labelcontent = document.createTextNode(category+":");
 
 	//add ids and classes
-	valueelement.setAttribute('class','qfilter-current-label');
+	labelelement.setAttribute('class','qfilter-current-label');
 	labelelement.appendChild(labelcontent);
 
 	//value (child element)
