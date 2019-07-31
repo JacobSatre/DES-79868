@@ -42,11 +42,18 @@ function sortFilter(option) {
 			if (categories[i].filterValues.includes(option) == false) {
 				categories[i].filterValues.push(option);
 
+				//update page elements
+				addCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
+				
+
 			//if category includes option, find and remove it
 			} else {
 				for (let n = 0; n < categories[i].filterValues.length; n++) {
 					if (categories[i].filterValues[n] == option) {
 						categories[i].filterValues.splice(n,1);
+
+						//update page elements
+						removeCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
 					}
 				}
 			}
@@ -97,6 +104,69 @@ function buildQuery() {
 		$(submitList[i]).attr('href',hrefList[i] + queryString);
 
 	}
+}
+
+//Adds current selections to the page as DOM elements
+function addCurrentFilter(value, category, categoryLength) {
+	
+	//define element ids
+	let valueid = "qfilter-current" + "-" + category + "-" + encodeURIComponent(value);
+	let categoryid = "qfilter-current" + "-" + category;
+
+	//category (parent element)
+	let categoryelement = document.createElement("p");
+
+	//add ids and classes
+	categoryelement.setAttribute('id',categoryid);
+	categoryelement.setAttribute('class','qfilter-current-category')
+
+	//label (child element)
+	let labelelement = document.createElement("span");
+	let labelcontent = document.createTextNode(category+":");
+
+	//add ids and classes
+	valueelement.setAttribute('class','qfilter-current-label');
+	labelelement.appendChild(labelcontent);
+
+	//value (child element)
+	let valueelement = document.createElement("span");
+	let valuecontent = document.createTextNode(value+"");
+
+	//add ids and classes
+	valueelement.setAttribute('id',valueid);
+	valueelement.setAttribute('class','qfilter-current-value');
+	valueelement.appendChild(valuecontent);
+	
+	//add correct elements
+	if (categoryLength == 1) {
+		document.getElementById('qfilter-current').appendChild(categoryelement);
+		categoryelement.appendChild(labelelement);
+		categoryelement.appendChild(valueelement);
+	} else {
+		document.getElementById(categoryid).appendChild(valueelement);
+	}
+}
+
+////Removes current selections DOM elements from page
+function removeCurrentFilter(value, category, categoryLength) {
+
+	//define element ids
+	let valueid = "qfilter-current" + "-" + category + "-" + encodeURIComponent(value);
+	let categoryid = "qfilter-current" + "-" + category;
+
+	//category (parent element)
+	let categoryelement = document.getElementById(categoryid);
+
+	//value (child element)
+	let valueelement = document.getElementById(valueid);
+
+	//remove correct elements
+	if (categoryLength == 0) {
+		categoryelement.remove();
+	} else {
+		valueelement.remove();
+	}
+
 }
 
 //updates category count of corresponding data-filter
