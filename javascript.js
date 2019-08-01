@@ -39,6 +39,8 @@ $(document).ready(function() {
     //manages options/filters
     function sortFilter(option) {
 
+        let sortFilterError = true;
+
         //interate through each category
         for (let i = 0; i < categories.length; i++) {
             if (option.dataset.filter.toUpperCase() == categories[i].filterName.toUpperCase()) {
@@ -51,6 +53,8 @@ $(document).ready(function() {
                     addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                     updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
 
+                    sortFilterError = false;
+
                 //if category includes option, find and remove it
                 } else {
                     for (let n = 0; n < categories[i].filterValues.length; n++) {
@@ -60,10 +64,17 @@ $(document).ready(function() {
                             //update page elements
                             removeCurrentFilter(option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                             updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
+
+                            sortFilterError = false;
                         }
                     }
                 }
             }
+        }
+
+        //log errors
+        if (sortFilterError == true) {
+            console.log("qfilter error at button '"+$(option).text()+"': '"+option.dataset.filter+"' is not a recognized category");
         }
     }
 
@@ -138,7 +149,7 @@ $(document).ready(function() {
 
         //add ids and classes
         valueelement.setAttribute('id', valueid);
-        valueelement.setAttribute('class', 'qfilter-current-value');
+        valueelement.setAttribute('class', 'qfilter-current-value btn btn-main');
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
