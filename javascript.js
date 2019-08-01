@@ -43,24 +43,21 @@ $(document).ready(function() {
             if (option.dataset.filter.toUpperCase() == categories[i].filterName.toUpperCase()) {
 
                 //if category doesn't include option, add it
-                console.log(option.dataset.value);
-
                 if (categories[i].filterValues.includes(option.dataset.value) == false) {
                     categories[i].filterValues.push(option.dataset.value);
 
                     //update page elements
-                    addCurrentFilter(option.dataset.value, $(option).text(), categories[i].filterName, categories[i].filterValues.length);
+                    addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                     updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
 
-
-                    //if category includes option, find and remove it
+                //if category includes option, find and remove it
                 } else {
                     for (let n = 0; n < categories[i].filterValues.length; n++) {
                         if (categories[i].filterValues[n] == option.dataset.value) {
                             categories[i].filterValues.splice(n, 1);
 
                             //update page elements
-                            removeCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
+                            removeCurrentFilter(option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                             updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
                         }
                     }
@@ -136,13 +133,13 @@ $(document).ready(function() {
 
         //value (child element)
         let valueelement = document.createElement("span");
-        let valuecontent = document.createTextNode(value + "");
+        let valuecontent = document.createTextNode(name);
 
         //add ids and classes
         valueelement.setAttribute('id', valueid);
         valueelement.setAttribute('class', 'qfilter-current-value');
         valueelement.setAttribute('data-filter', category);
-        valueelement.setAttribute('data-value', name);
+        valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
         valueelement.addEventListener("click", function() { cancelCurrentFilter(this) });
 
