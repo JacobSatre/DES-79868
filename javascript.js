@@ -14,6 +14,9 @@ $(document).ready(function() {
     //retrieve option button list
     let optionList = $('.qfilter-option');
 
+    //retrieve inventory count element list
+    let inventoryCount = $('.qfilter-inventorycount');
+
     //categories
     let type = { filterName: "Type", filterValues: [] };
     let year = { filterName: "Year", filterValues: [] };
@@ -37,7 +40,7 @@ $(document).ready(function() {
     const categories = [type, year, model, make, bodystyle, fueltype, extcolor, mpgcity, mpghighway, transmission, features, pricerange, cylinders, drivetraintype, cpo, carfax1owner, special];
 
     //manages options/filters
-    function sortFilter(option) {
+    function sortFilter(option, override) {
 
         let sortFilterError = true;
 
@@ -50,8 +53,10 @@ $(document).ready(function() {
                     categories[i].filterValues.push(option.dataset.value);
 
                     //update page elements
+                    if (override != true) {
                     addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                     updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
+                    }
 
                     sortFilterError = false;
 
@@ -114,11 +119,37 @@ $(document).ready(function() {
 
         //encode URL
         queryString = encodeURI(queryString);
+        apiString = "/api/search/refine" + queryString
+
+        //SEND API REQUEST
+        let inventory = $.get(apiString, function() {
+
+            console.log( "sending API request ("+apiString+")");
+
+          }).done(function() {
+
+            console.log(inventory.responseJSON.Count);
+
+          }).fail(function() {
+
+            console.log( "Unable to retrieve inventory count" );
+
+          }).always(function() {
+            $(submitList).attr('disabled', false);
+
+            for (let i = 0; i < inventoryCount.length; i++) {
+                $(inventoryCount[i]).text("("+inventory.responseJSON.Count+")");
+            }
+
+            if (inventory.responseJSON.Count == 0) {
+                $(submitList).attr('disabled', true);
+            }
+
+          });
 
         //update submit button href
         for (let i = 0; i < submitList.length; i++) {
             $(submitList[i]).attr('href', hrefList[i] + queryString);
-
         }
     }
 
@@ -134,7 +165,7 @@ $(document).ready(function() {
 
         //add ids and classes
         categoryelement.setAttribute('id', categoryid);
-        categoryelement.setAttribute('class', 'qfilter-current-category')
+        categoryelement.setAttribute('class', 'qfilter-current-category');
 
         //label (child element)
         let labelelement = document.createElement("span");
@@ -219,11 +250,12 @@ $(document).ready(function() {
 
     //gather override filters
     for (let i = 0; i < overrideList.length; i++) {
-        sortFilter(overrideList[i]);
+        sortFilter(overrideList[i], true);
         buildQuery();
     }
 
     //onclick
+    buildQuery();
     $('.qfilter-option').click(function() {
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
