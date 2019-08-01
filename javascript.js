@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     //retrieve and cache submit button href value
     let overrideList = $('.qfilter-override');
     let submitList = $('.qfilter-submit');
@@ -8,7 +9,7 @@ $(document).ready(function() {
     }
 
     //retrieve category filter count elements
-    let filterCount = $('.qfilter-filtercount');
+    let categoryCount = $('.qfilter-categorycount');
 
     let optionList = $('.qfilter-option');
 
@@ -49,7 +50,7 @@ $(document).ready(function() {
 
                     //update page elements
                     addCurrentFilter(option.dataset.value, $(option).text(), categories[i].filterName, categories[i].filterValues.length);
-                    updateFilterCount(categories[i].filterName, categories[i].filterValues.length);
+                    updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
 
 
                     //if category includes option, find and remove it
@@ -60,7 +61,7 @@ $(document).ready(function() {
 
                             //update page elements
                             removeCurrentFilter($(option).text(), categories[i].filterName, categories[i].filterValues.length);
-                            updateFilterCount(categories[i].filterName, categories[i].filterValues.length);
+                            updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
                         }
                     }
                 }
@@ -143,7 +144,7 @@ $(document).ready(function() {
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', name);
         valueelement.appendChild(valuecontent);
-        valueelement.addEventListener("click", function() { cancelFilter(this) });
+        valueelement.addEventListener("click", function() { cancelCurrentFilter(this) });
 
         //add correct elements
         if (categoryLength == 1) {
@@ -167,7 +168,7 @@ $(document).ready(function() {
 
         //value (child element)
         let valueelement = document.getElementById(valueid);
-        valueelement.removeEventListener("click", function() { cancelFilter(this) });
+        valueelement.removeEventListener("click", function() { cancelCurrentFilter(this) });
 
         //remove correct elements
         if (categoryLength == 0) {
@@ -178,7 +179,7 @@ $(document).ready(function() {
     }
 
     //click to remove current filters 
-    function cancelFilter(option) {
+    function cancelCurrentFilter(option) {
         let value = option.dataset.value;
         let filter = option.dataset.filter;
         for (let i = 0; i < optionList.length; i++) {
@@ -191,13 +192,13 @@ $(document).ready(function() {
     }
 
     //updates category count element
-    function updateFilterCount(category, categoryLength) {
-        for (let i = 0; i < filterCount.length; i++) {
-            if (filterCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
+    function updateCategoryCount(category, categoryLength) {
+        for (let i = 0; i < categoryCount.length; i++) {
+            if (categoryCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
                 if (categoryLength > 0) {
-                    $(filterCount[i]).text('(' + categoryLength + ')')
+                    $(categoryCount[i]).text('(' + categoryLength + ')')
                 } else {
-                    $(filterCount[i]).text('');
+                    $(categoryCount[i]).text('');
                 }
             }
         }
