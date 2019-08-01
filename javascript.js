@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    //retrieve and cache submit button href value
+    //retrieve and cache submit button hrefs
     let overrideList = $('.qfilter-override');
     let submitList = $('.qfilter-submit');
     let hrefList = [];
@@ -8,9 +8,10 @@ $(document).ready(function() {
         hrefList.push(submitList[i].getAttribute('href'));
     }
 
-    //retrieve category filter count elements
+    //retrieve category count element list
     let categoryCount = $('.qfilter-categorycount');
 
+    //retrieve option button list
     let optionList = $('.qfilter-option');
 
     //categories
@@ -68,6 +69,7 @@ $(document).ready(function() {
 
     //builds query string
     function buildQuery() {
+
         let queryString = "";
         let beginBuild = false;
 
@@ -109,7 +111,7 @@ $(document).ready(function() {
         }
     }
 
-    //Adds current selections to the page as DOM elements
+    //adds current selections to the page as DOM elements
     function addCurrentFilter(name, value, category, categoryLength) {
 
         //define element ids
@@ -126,7 +128,6 @@ $(document).ready(function() {
         //label (child element)
         let labelelement = document.createElement("span");
         let labelcontent = document.createTextNode(category + ":");
-
         //add ids and classes
         labelelement.setAttribute('class', 'qfilter-current-label');
         labelelement.appendChild(labelcontent);
@@ -153,7 +154,7 @@ $(document).ready(function() {
         }
     }
 
-    ////Removes current selections DOM elements from page
+    ////removes current selections DOM elements from page
     function removeCurrentFilter(value, category, categoryLength) {
 
         //define element ids
@@ -175,20 +176,24 @@ $(document).ready(function() {
         }
     }
 
-    //click to remove current filters 
+    //click to remove current filters
     function cancelCurrentFilter(option) {
+
         let value = option.dataset.value;
         let filter = option.dataset.filter;
+
+        //remove selected class from the correct option button
         for (let i = 0; i < optionList.length; i++) {
             if (optionList[i].dataset.value.toUpperCase() == value.toUpperCase() && optionList[i].dataset.filter.toUpperCase() == filter.toUpperCase()) {
                 $(optionList[i]).removeClass('qfilter-selected');
             }
         }
+
         sortFilter(option);
         buildQuery();
     }
 
-    //updates category count element
+    //updates category count elements
     function updateCategoryCount(category, categoryLength) {
         for (let i = 0; i < categoryCount.length; i++) {
             if (categoryCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
@@ -201,7 +206,7 @@ $(document).ready(function() {
         }
     }
 
-    //gather overrides
+    //gather override filters
     for (let i = 0; i < overrideList.length; i++) {
         sortFilter(overrideList[i]);
         buildQuery();
