@@ -1,42 +1,39 @@
 $(document).ready(function() {
-    
-    //retrieve and cache submit button hrefs
-    let submitList = $('.qfilter-submit');
-    let hrefList = [];
-    for (let i = 0; i < submitList.length; i++) {
-        hrefList.push(submitList[i].getAttribute('href'));
-    }
 
-    //
+    //retrieve submit button list
+    let submitList = $('.qfilter-submit');
+    let href = $('.qfilter-submit').attr('href');
+
+    //retrieve option button list
+    let optionList = $('.qfilter-option');
+
+    //retrieve override element list
     let overrideList = $('.qfilter-override');
 
     //retrieve category count element list
     let categoryCount = $('.qfilter-categorycount');
 
-    //retrieve option button list
-    let optionList = $('.qfilter-option');
-
     //retrieve inventory count element list
     let inventoryCount = $('.qfilter-inventorycount');
 
     //categories
-    let type = { filterName: "Type", filterValues: [] };
-    let year = { filterName: "Year", filterValues: [] };
-    let model = { filterName: "Model", filterValues: [] };
-    let make = { filterName: "Make", filterValues: [] };
-    let bodystyle = { filterName: "Bodystyle", filterValues: [] };
-    let fueltype = { filterName: "Fueltype", filterValues: [] };
-    let extcolor = { filterName: "ExtColor", filterValues: [] };
-    let mpgcity = { filterName: "CityMpgrange", filterValues: [] };
-    let mpghighway = { filterName: "HwyMpgrange", filterValues: [] };
-    let transmission = { filterName: "Transmission", filterValues: [] };
-    let features = { filterName: "Features", filterValues: [] };
-    let pricerange = { filterName: "Pricerange", filterValues: [] };
-    let cylinders = { filterName: "Cylinders", filterValues: [] };
-    let drivetraintype = { filterName: "DriveTrainType", filterValues: [] };
-    let cpo = { filterName: "cpo", filterValues: [] };
-    let carfax1owner = { filterName: "carfax1owner", filterValues: [] };
-    let special = { filterName: "special", filterValues: [] };
+    let type = { filterName: "Type", filterValues: [] },
+        year = { filterName: "Year", filterValues: [] },
+        model = { filterName: "Model", filterValues: [] },
+        make = { filterName: "Make", filterValues: [] },
+        bodystyle = { filterName: "Bodystyle", filterValues: [] },
+        fueltype = { filterName: "Fueltype", filterValues: [] },
+        extcolor = { filterName: "ExtColor", filterValues: [] },
+        mpgcity = { filterName: "CityMpgrange", filterValues: [] },
+        mpghighway = { filterName: "HwyMpgrange", filterValues: [] },
+        transmission = { filterName: "Transmission", filterValues: [] },
+        features = { filterName: "Features", filterValues: [] },
+        pricerange = { filterName: "Pricerange", filterValues: [] },
+        cylinders = { filterName: "Cylinders", filterValues: [] },
+        drivetraintype = { filterName: "DriveTrainType", filterValues: [] },
+        cpo = { filterName: "cpo", filterValues: [] },
+        carfax1owner = { filterName: "carfax1owner", filterValues: [] },
+        special = { filterName: "special", filterValues: [] };
 
     //categories list
     const categories = [type, year, model, make, bodystyle, fueltype, extcolor, mpgcity, mpghighway, transmission, features, pricerange, cylinders, drivetraintype, cpo, carfax1owner, special];
@@ -44,6 +41,7 @@ $(document).ready(function() {
     //manages options/filters
     function sortFilter(option, override) {
 
+        //category sorting error toggle switch
         let sortFilterError = true;
 
         //interate through each category
@@ -56,10 +54,11 @@ $(document).ready(function() {
 
                     //update page elements
                     if (override != true) {
-                    addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
-                    updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
+                        addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
+                        updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
                     }
 
+                    //no problems
                     sortFilterError = false;
 
                 //if category includes option, find and remove it
@@ -72,6 +71,7 @@ $(document).ready(function() {
                             removeCurrentFilter(option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
                             updateCategoryCount(categories[i].filterName, categories[i].filterValues.length);
 
+                            //no problems
                             sortFilterError = false;
                         }
                     }
@@ -79,7 +79,7 @@ $(document).ready(function() {
             }
         }
 
-        //log errors
+        //log category errors
         if (sortFilterError == true) {
             console.log("qfilter error at button '"+$(option).text()+"': '"+option.dataset.filter+"' is not a recognized category");
         }
@@ -121,13 +121,14 @@ $(document).ready(function() {
 
         //encode URL
         queryString = encodeURI(queryString);
+
         apiString = "/api/search/refine" + queryString
 
         //add class until api request is returned
         $(inventoryCount).addClass('qfilter-waitingapi');
 
         //SEND API REQUEST
-        let inventory = $.get(apiString, function() {
+        let inventorydata = $.get(apiString, function() {
 
             console.log( "sending API request ("+apiString+")");
             
@@ -135,20 +136,20 @@ $(document).ready(function() {
 
             //update inventory count elements
             for (let i = 0; i < inventoryCount.length; i++) {
-                $(inventoryCount[i]).text("("+inventory.responseJSON.Count+")");
+                $(inventoryCount[i]).text("("+inventorydata.responseJSON.Count+")");
             }
 
             //disable submit button if count = 0
-            if (inventory.responseJSON.Count == 0) {
-                $(submitList).attr('disabled',true);
+            if (inventorydata.responseJSON.Count == 0) {
+                $(submitList).attr('disabled',true).attr('title','No Inventory, Please Select Different Filters');
             } else {
-                $(submitList).attr('disabled',false);
+                $(submitList).attr('disabled',false).removeAttr('title');
             }
 
             //api completed, remove class
             $(inventoryCount).removeClass('qfilter-waitingapi');
 
-            console.log(inventory.responseJSON.Count);
+            console.log(inventorydata.responseJSON.Count);
 
         }).fail(function() {
 
@@ -158,9 +159,7 @@ $(document).ready(function() {
         });
 
         //update submit button href
-        for (let i = 0; i < submitList.length; i++) {
-            $(submitList[i]).attr('href', hrefList[i] + queryString);
-        }
+        $(submitList).attr('href', href + queryString);
     }
 
     //adds current selections to the page as DOM elements
@@ -196,7 +195,7 @@ $(document).ready(function() {
         valueelement.appendChild(valuecontent);
         valueelement.addEventListener("click", function() { cancelCurrentFilter(this) });
 
-        //add correct elements
+        //add correct element(s)
         if (categoryLength == 1) {
             document.getElementById('qfilter-current').appendChild(categoryelement);
             categoryelement.appendChild(labelelement);
@@ -220,7 +219,7 @@ $(document).ready(function() {
         let valueelement = document.getElementById(valueid);
         valueelement.removeEventListener("click", function() { cancelCurrentFilter(this) });
 
-        //remove correct elements
+        //remove correct element(s)
         if (categoryLength == 0) {
             categoryelement.remove();
         } else {
@@ -258,19 +257,26 @@ $(document).ready(function() {
         }
     }
 
-    //gather override filters
-    for (let i = 0; i < overrideList.length; i++) {
-        sortFilter(overrideList[i], true);
-        buildQuery();
-    }
-
-    //onclick
+    //process option clicks
     $('.qfilter-option').click(function() {
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
         buildQuery();
     });
 
-    //retrieve initial count
+    //gather override filters
+    for (let i = 0; i < overrideList.length; i++) {
+        sortFilter(overrideList[i], true);
+        buildQuery();
+    }
+
+    //prevent search if button is disabled
+    $(submitList).click(function(event){
+        if ($(submitList[0]).attr('disabled') == "disabled") {
+            event.preventDefault();
+        }
+    });
+
+    //initial query
     buildQuery();
 });
