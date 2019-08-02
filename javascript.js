@@ -1,12 +1,14 @@
 $(document).ready(function() {
-
+    
     //retrieve and cache submit button hrefs
-    let overrideList = $('.qfilter-override');
     let submitList = $('.qfilter-submit');
     let hrefList = [];
     for (let i = 0; i < submitList.length; i++) {
         hrefList.push(submitList[i].getAttribute('href'));
     }
+
+    //
+    let overrideList = $('.qfilter-override');
 
     //retrieve category count element list
     let categoryCount = $('.qfilter-categorycount');
@@ -121,31 +123,39 @@ $(document).ready(function() {
         queryString = encodeURI(queryString);
         apiString = "/api/search/refine" + queryString
 
+        //add class until api request is returned
+        $(inventoryCount).addClass('qfilter-waitingapi');
+
         //SEND API REQUEST
         let inventory = $.get(apiString, function() {
 
             console.log( "sending API request ("+apiString+")");
+            
+        }).done(function() {
 
-          }).done(function() {
-
-            console.log(inventory.responseJSON.Count);
-
-          }).fail(function() {
-
-            console.log( "Unable to retrieve inventory count" );
-
-          }).always(function() {
-            $(submitList).attr('disabled', false);
-
+            //update inventory count elements
             for (let i = 0; i < inventoryCount.length; i++) {
                 $(inventoryCount[i]).text("("+inventory.responseJSON.Count+")");
             }
 
+            //disable submit button if count = 0
             if (inventory.responseJSON.Count == 0) {
-                $(submitList).attr('disabled', true);
+                $(submitList).attr('disabled',true);
+            } else {
+                $(submitList).attr('disabled',false);
             }
 
-          });
+            //api completed, remove class
+            $(inventoryCount).removeClass('qfilter-waitingapi');
+
+            console.log(inventory.responseJSON.Count);
+
+        }).fail(function() {
+
+            console.log( "Unable to retrieve inventory count" );
+
+        }).always(function() {
+        });
 
         //update submit button href
         for (let i = 0; i < submitList.length; i++) {
@@ -255,10 +265,12 @@ $(document).ready(function() {
     }
 
     //onclick
-    buildQuery();
     $('.qfilter-option').click(function() {
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
         buildQuery();
     });
+
+    //retrieve initial count
+    buildQuery();
 });
