@@ -1,20 +1,20 @@
 $(document).ready(function() {
 
-    //retrieve submit button list
-    let submitList = $('.qfilter-submit');
-    let href = $('.qfilter-submit').attr('href');
+        //retrieve submit button list
+    let submitList = $('.qfilter-submit'),
+        href = $('.qfilter-submit').attr('href'),
 
-    //retrieve option button list
-    let optionList = $('.qfilter-option');
+        //retrieve option button list
+        optionList = $('.qfilter-option'),
 
-    //retrieve override element list
-    let overrideList = $('.qfilter-override');
+        //retrieve override element list
+        overrideList = $('.qfilter-override'),
 
-    //retrieve category count element list
-    let categoryCount = $('.qfilter-categorycount');
+        //retrieve category count element list
+        categoryCount = $('.qfilter-categorycount'),
 
-    //retrieve inventory count element list
-    let inventoryCount = $('.qfilter-inventorycount');
+        //retrieve inventory count element list
+        inventoryCount = $('.qfilter-inventorycount');
 
     //categories
     let type = { filterName: "Type", filterValues: [] },
@@ -122,7 +122,7 @@ $(document).ready(function() {
         //encode URL
         queryString = encodeURI(queryString);
 
-        apiString = "/api/search/refine" + queryString
+        let apiString = "/api/search/refine" + queryString;
 
         //add class until api request is returned
         $(inventoryCount).addClass('qfilter-waitingapi');
@@ -193,7 +193,7 @@ $(document).ready(function() {
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
-        valueelement.addEventListener("click", function() { cancelCurrentFilter(this) });
+        valueelement.addEventListener("click", function() { cancelCurrentFilter(this); });
 
         //add correct element(s)
         if (categoryLength == 1) {
@@ -217,7 +217,7 @@ $(document).ready(function() {
 
         //value (child element)
         let valueelement = document.getElementById(valueid);
-        valueelement.removeEventListener("click", function() { cancelCurrentFilter(this) });
+        valueelement.removeEventListener("click", function() { cancelCurrentFilter(this); });
 
         //remove correct element(s)
         if (categoryLength == 0) {
@@ -249,7 +249,7 @@ $(document).ready(function() {
         for (let i = 0; i < categoryCount.length; i++) {
             if (categoryCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
                 if (categoryLength > 0) {
-                    $(categoryCount[i]).text('(' + categoryLength + ')')
+                    $(categoryCount[i]).text('(' + categoryLength + ')');
                 } else {
                     $(categoryCount[i]).text('');
                 }
