@@ -136,7 +136,7 @@ $(document).ready(function() {
 
             //update inventory count elements
             for (let i = 0; i < inventoryCount.length; i++) {
-                $(inventoryCount[i]).text("("+inventorydata.responseJSON.Count+")");
+                $(inventoryCount[i]).text(inventorydata.responseJSON.Count);
             }
 
             //disable submit button if count = 0
@@ -170,11 +170,11 @@ $(document).ready(function() {
         let categoryid = "qfilter-current" + "-" + category;
 
         //category (parent element)
-        let categoryelement = document.createElement("p");
+        let categoryelement = document.createElement("li");
 
         //add ids and classes
         categoryelement.setAttribute('id', categoryid);
-        categoryelement.setAttribute('class', 'qfilter-current-category');
+        categoryelement.setAttribute('class', 'qfilter-current-category text-cta');
 
         //label (child element)
         let labelelement = document.createElement("span");
@@ -189,7 +189,7 @@ $(document).ready(function() {
 
         //add ids and classes
         valueelement.setAttribute('id', valueid);
-        valueelement.setAttribute('class', 'qfilter-current-value btn btn-main');
+        valueelement.setAttribute('class', 'qfilter-current-value');
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
@@ -244,6 +244,15 @@ $(document).ready(function() {
         buildQuery();
     }
 
+    function cancelAllFilters() {
+        let currentFilters = $('.qfilter-selected');
+        for (let i = 0; i < currentFilters.length; i++) {
+            sortFilter(currentFilters[i]);
+            $(currentFilters[i]).removeClass('qfilter-selected');
+        }
+        buildQuery();
+    }
+
     //updates category count elements
     function updateCategoryCount(category, categoryLength) {
         for (let i = 0; i < categoryCount.length; i++) {
@@ -262,6 +271,11 @@ $(document).ready(function() {
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
         buildQuery();
+    });
+
+    //process reset filters clicks
+    $('.qfilter-reset').click(function() {
+        cancelAllFilters();
     });
 
     //gather override filters
