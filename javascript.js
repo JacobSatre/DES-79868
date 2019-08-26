@@ -22,8 +22,11 @@ $(document).ready(function() {
         model = { filterName: "Model", filterValues: [] },
         make = { filterName: "Make", filterValues: [] },
         bodystyle = { filterName: "Bodystyle", filterValues: [] },
+        bodytype = { filterName: "Bodytype", filterValues: [] },
         fueltype = { filterName: "Fueltype", filterValues: [] },
         extcolor = { filterName: "ExtColor", filterValues: [] },
+        intcolor = { filterName: "IntColor", filterValues: [] },
+        mileage = { filterName: "Mileagerange", filterValues: [] },
         mpgcity = { filterName: "CityMpgrange", filterValues: [] },
         mpghighway = { filterName: "HwyMpgrange", filterValues: [] },
         transmission = { filterName: "Transmission", filterValues: [] },
@@ -36,7 +39,9 @@ $(document).ready(function() {
         special = { filterName: "special", filterValues: [] };
 
     //categories list
-    const categories = [type, year, model, make, bodystyle, fueltype, extcolor, mpgcity, mpghighway, transmission, features, pricerange, cylinders, drivetraintype, cpo, carfax1owner, special];
+    const categories = [type, year, model, make, bodystyle, bodytype, fueltype, extcolor, intcolor, mileage, mpgcity, mpghighway, transmission, features, pricerange, cylinders, drivetraintype, cpo, carfax1owner, special];
+
+    let selectedCount = 0;
 
     //manages options/filters
     function sortFilter(option, override) {
@@ -52,6 +57,8 @@ $(document).ready(function() {
                 if (categories[i].filterValues.includes(option.dataset.value) == false) {
                     categories[i].filterValues.push(option.dataset.value);
 
+                    selectedCount++;
+
                     //update page elements
                     if (override != true) {
                         addCurrentFilter($(option).text(), option.dataset.value, categories[i].filterName, categories[i].filterValues.length);
@@ -63,6 +70,9 @@ $(document).ready(function() {
 
                 //if category includes option, find and remove it
                 } else {
+
+                    selectedCount--;
+
                     for (let n = 0; n < categories[i].filterValues.length; n++) {
                         if (categories[i].filterValues[n] == option.dataset.value) {
                             categories[i].filterValues.splice(n, 1);
@@ -160,6 +170,9 @@ $(document).ready(function() {
 
         //update submit button href
         $(submitList).attr('href', href + queryString);
+
+        //update qfilter selected count
+        $('.quickFilterSearch').attr('data-selected',selectedCount);
     }
 
     //adds current selections to the page as DOM elements
@@ -174,13 +187,13 @@ $(document).ready(function() {
 
         //add ids and classes
         categoryelement.setAttribute('id', categoryid);
-        categoryelement.setAttribute('class', 'qfilter-current-category text-cta');
+        categoryelement.setAttribute('class', 'qfilter-current-category');
 
         //label (child element)
         let labelelement = document.createElement("span");
         let labelcontent = document.createTextNode(category + ":");
         //add ids and classes
-        labelelement.setAttribute('class', 'qfilter-current-label');
+        labelelement.setAttribute('class', 'qfilter-current-label  text-cta');
         labelelement.appendChild(labelcontent);
 
         //value (child element)
