@@ -308,6 +308,14 @@ $(document).ready(function() {
         }
     });
 
+    //process spacebar and enter presses (accessibility)
+    $(".qfilter-reset").keypress(function() {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13' || keycode == '32'){
+            cancelAllFilters();
+        }
+    });
+
     //process reset filters clicks
     $('.qfilter-reset').click(function() {
         cancelAllFilters();
