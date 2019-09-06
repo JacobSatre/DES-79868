@@ -205,9 +205,6 @@ $(document).ready(function() {
         valueelement.setAttribute('class',   'qfilter-current-value');
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
-        valueelement.setAttribute('tabindex', '0');
-        valueelement.setAttribute('role', 'button');
-        valueelement.setAttribute('aria-label', 'click to remove');
         valueelement.appendChild(valuecontent);
         valueelement.addEventListener("click", function() { cancelCurrentFilter(this); });
 
@@ -294,6 +291,21 @@ $(document).ready(function() {
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
         buildQuery();
+    });
+
+    //process spacebar and enter presses (accessibility)
+    $(".qfilter-option").keypress(function() {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13' || keycode == '32'){
+            if ($(this).attr('aria-checked') == 'false') {
+                $(this).attr('aria-checked','true');
+            } else {
+                $(this).attr('aria-checked','false');
+            }
+            $(this).toggleClass('qfilter-selected');
+            sortFilter(this);
+            buildQuery();
+        }
     });
 
     //process reset filters clicks
