@@ -151,9 +151,9 @@ $(document).ready(function() {
 
             //disable submit button if count = 0
             if (inventorydata.responseJSON.Count == 0) {
-                $(submitList).attr('disabled',true).attr('title','No Inventory, Please Select Different Filters');
+                $(submitList).attr('disabled',true).attr('title','No inventory, please select different filters').attr('aria-label','No inventory, please select different filters');
             } else {
-                $(submitList).attr('disabled',false).removeAttr('title');
+                $(submitList).attr('disabled',false).removeAttr('title').removeAttr('aria-label');
             }
 
             //api completed, remove class
@@ -202,9 +202,12 @@ $(document).ready(function() {
 
         //add ids and classes
         valueelement.setAttribute('id', valueid);
-        valueelement.setAttribute('class', 'qfilter-current-value');
+        valueelement.setAttribute('class',   'qfilter-current-value');
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
+        valueelement.setAttribute('tabindex', '0');
+        valueelement.setAttribute('role', 'button');
+        valueelement.setAttribute('aria-label', 'click to remove');
         valueelement.appendChild(valuecontent);
         valueelement.addEventListener("click", function() { cancelCurrentFilter(this); });
 
@@ -250,6 +253,7 @@ $(document).ready(function() {
         for (let i = 0; i < optionList.length; i++) {
             if (optionList[i].dataset.value.toUpperCase() == value.toUpperCase() && optionList[i].dataset.filter.toUpperCase() == filter.toUpperCase()) {
                 $(optionList[i]).removeClass('qfilter-selected');
+                $(optionList[i]).attr('aria-checked','false');
             }
         }
 
@@ -262,6 +266,7 @@ $(document).ready(function() {
         for (let i = 0; i < currentFilters.length; i++) {
             sortFilter(currentFilters[i]);
             $(currentFilters[i]).removeClass('qfilter-selected');
+            $(currentFilters[i]).attr('aria-checked','false');
         }
         buildQuery();
     }
@@ -281,6 +286,11 @@ $(document).ready(function() {
 
     //process option clicks
     $('.qfilter-option').click(function() {
+        if ($(this).attr('aria-checked') == 'false') {
+            $(this).attr('aria-checked','true');
+        } else {
+            $(this).attr('aria-checked','false');
+        }
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
         buildQuery();
