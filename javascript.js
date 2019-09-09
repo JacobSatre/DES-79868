@@ -18,7 +18,6 @@
   });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
-
 $(document).ready(function() {
 
         //retrieve submit button list
@@ -214,7 +213,7 @@ $(document).ready(function() {
         let labelelement = document.createElement("span");
         let labelcontent = document.createTextNode(category + ":");
         //add ids and classes
-        labelelement.setAttribute('class', 'qfilter-current-label  text-cta');
+        labelelement.setAttribute('class', 'qfilter-current-label');
         labelelement.appendChild(labelcontent);
 
         //value (child element)
@@ -223,7 +222,7 @@ $(document).ready(function() {
 
         //add ids and classes
         valueelement.setAttribute('id', valueid);
-        valueelement.setAttribute('class',   'qfilter-current-value');
+        valueelement.setAttribute('class', 'qfilter-current-value text-cta');
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
