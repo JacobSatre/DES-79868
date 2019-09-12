@@ -270,7 +270,7 @@ $(document).ready(function() {
         for (let i = 0; i < optionList.length; i++) {
             if (optionList[i].dataset.value.toUpperCase() == value.toUpperCase() && optionList[i].dataset.filter.toUpperCase() == filter.toUpperCase()) {
                 $(optionList[i]).removeClass('qfilter-selected');
-                $(optionList[i]).attr('aria-checked','false');
+                $(optionList[i]).attr('aria-selected','false');
             }
         }
 
@@ -283,7 +283,7 @@ $(document).ready(function() {
         for (let i = 0; i < currentFilters.length; i++) {
             sortFilter(currentFilters[i]);
             $(currentFilters[i]).removeClass('qfilter-selected');
-            $(currentFilters[i]).attr('aria-checked','false');
+            $(currentFilters[i]).attr('aria-selected','false');
         }
         buildQuery();
     }
@@ -303,10 +303,10 @@ $(document).ready(function() {
 
     //process option clicks
     $('.qfilter-option').click(function() {
-        if ($(this).attr('aria-checked') == 'false') {
-            $(this).attr('aria-checked','true');
+        if ($(this).attr('aria-selected') == 'false') {
+            $(this).attr('aria-selected','true');
         } else {
-            $(this).attr('aria-checked','false');
+            $(this).attr('aria-selected','false');
         }
         $(this).toggleClass('qfilter-selected');
         sortFilter(this);
@@ -317,10 +317,10 @@ $(document).ready(function() {
     $(".qfilter-option").keypress(function() {
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if (keycode == '13' || keycode == '32'){
-            if ($(this).attr('aria-checked') == 'false') {
-                $(this).attr('aria-checked','true');
+            if ($(this).attr('aria-selected') == 'false') {
+                $(this).attr('aria-selected','true');
             } else {
-                $(this).attr('aria-checked','false');
+                $(this).attr('aria-selected','false');
             }
             $(this).toggleClass('qfilter-selected');
             sortFilter(this);
