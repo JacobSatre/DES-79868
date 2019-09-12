@@ -18,6 +18,43 @@
   });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
+//Accessibility Keyboard Controls
+$("[role=listbox]").on("focus", function () {
+   // If no selected element, select the first by default
+   if (!$(this).find(".focused").length) {               
+        $(this).find("[role=option]:first").addClass("focused").focus();
+   } else {
+       $(this).find(".focused").focus();
+   }
+});
+$("[role=listbox]").on("keydown", function (e) {            
+    var currentItem = $(this).find(".focused");          
+    switch (e.keyCode) {
+        case 38:  // Up arrow
+            if (currentItem.prev().length) {
+                currentItem.removeClass("focused");                    
+                currentItem.prev().addClass("focused").focus();
+            }                    
+            e.preventDefault();
+            break;
+        case 40: // Down arrow
+            if (currentItem.next().length) {
+                currentItem.removeClass("focused");
+                currentItem.next().addClass("focused").focus();
+            }
+            e.preventDefault();
+            break;
+    }
+});
+$("[role=option]").on("focus", function (e) {
+   $(this).parent().attr("tabindex", "-1");
+});
+
+$("[role=option]").on("blur", function (e) {
+   $(this).parent().attr("tabindex", "0");
+});
+
+//Main Logic
 $(document).ready(function() {
 
         //retrieve submit button list
