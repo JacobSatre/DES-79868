@@ -27,9 +27,16 @@ $("[role=listbox]").on("focus", function () {
        $(this).find(".focused").focus();
    }
 });
+let keyboardSearchString = "";
+let keyboardTimer;
 $("[role=listbox]").on("keydown", function (e) {            
-    var currentItem = $(this).find(".focused");          
+    var currentItem = $(this).find(".focused");
+    var currentFilter = $(this).attr('data-filter');
+    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');
+    console.log(currentList.length);    
     switch (e.keyCode) {
+        case 9:  //Tab
+            break;
         case 38:  // Up arrow
             if (currentItem.prev().length) {
                 currentItem.removeClass("focused");                    
@@ -37,13 +44,41 @@ $("[role=listbox]").on("keydown", function (e) {
             }                    
             e.preventDefault();
             break;
-        case 40: // Down arrow
+        case 40: // Dotwn arrow
             if (currentItem.next().length) {
                 currentItem.removeClass("focused");
                 currentItem.next().addClass("focused").focus();
             }
             e.preventDefault();
             break;
+        case 35: //End
+            currentItem.removeClass("focused");
+            currentList.last().addClass("focused").focus();
+            e.preventDefault();
+            break;
+        case 36: //Home
+            currentItem.removeClass("focused");
+            currentList.first().addClass("focused").focus();
+            e.preventDefault();
+            break;
+        default:
+            clearTimeout(keyboardTimer);
+            keyboardSearchString += e.key;
+            keyboardTimer = setTimeout(function(){
+                var patt = new RegExp('^' + keyboardSearchString, 'i');
+                for (let i = 0; i < currentList.length; i++) {
+                    currentText = $(currentList[i]).text()
+                    if (patt.test(currentText)) {
+                        console.log("match found");
+                        currentItem.removeClass("focused");
+                        $(currentList[i]).addClass("focused").focus();
+                        break;
+                    } else {
+                        console.log("no match");
+                    }
+                }
+                keyboardSearchString = "";
+            }, 500); 
     }
 });
 $("[role=option]").on("focus", function (e) {
