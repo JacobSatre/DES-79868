@@ -18,13 +18,31 @@
   });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
+$('.qfilter-category-toggle').on('keypress', function(e){
+	if (e.key === " " || e.key === "Enter") {
+		this.click();
+		console.log('toggle button clicked');
+		$(this).next().find('[role="listbox"]').focus();
+		e.preventDefault();
+	}
+});
+
+$('.qfilter-category-toggle').on('focus', function(e){
+	if ($(this).attr('aria-expanded') == "false") {
+		console.log('focused on a closed button');
+	} else {
+		console.log('focused on an open button');
+		$(this)
+	}
+});
 //Accessibility Keyboard Controls
 $("[role=listbox]").on("focus", function () {
+	console.log('focused on a listbox');
    // If no selected element, select the first by default
-   if (!$(this).find(".focused").length) {               
+   if (!$(this).find(".qfilter-selected").length) {               
         $(this).find("[role=option]:first").addClass("focused").focus();
    } else {
-       $(this).find(".focused").focus();
+       $(this).find(".qfilter-selected:first").addClass('focused').focus();
    }
 });
 let keyboardSearchString = "";
@@ -32,53 +50,70 @@ let keyboardTimer;
 $("[role=listbox]").on("keydown", function (e) {            
     var currentItem = $(this).find(".focused");
     var currentFilter = $(this).attr('data-filter');
-    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');
-    console.log(currentList.length);    
-    switch (e.keyCode) {
-        case 9:  //Tab
+    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');  
+    switch (e.key) {
+    	case 'Escape':
+    		$(currentItem).on('blur', function(){
+            	currentItem.removeClass('focused');
+            });
+            console.log(currentItem);
             break;
-        case 38:  // Up arrow
+
+        case 'Tab':  //Tab
+    		$(currentItem).on('blur', function(){
+            	currentItem.removeClass('focused');
+            });
+            break;
+        case 'ArrowUp':  // Up arrow
             if (currentItem.prev().length) {
-                currentItem.removeClass("focused");                    
+                $(currentItem).on('blur', function(){
+                	currentItem.removeClass('focused');
+                });                
                 currentItem.prev().addClass("focused").focus();
             }                    
             e.preventDefault();
             break;
-        case 40: // Dotwn arrow
+        case 'ArrowDown': // Dotwn arrow
             if (currentItem.next().length) {
-                currentItem.removeClass("focused");
+                $(currentItem).on('blur', function(){
+                	currentItem.removeClass('focused');
+                }); 
                 currentItem.next().addClass("focused").focus();
             }
             e.preventDefault();
             break;
-        case 35: //End
-            currentItem.removeClass("focused");
+        case 'End': //End
+            $(currentItem).on('blur', function(){
+            	currentItem.removeClass('focused');
+            }); 
             currentList.last().addClass("focused").focus();
             e.preventDefault();
             break;
-        case 36: //Home
-            currentItem.removeClass("focused");
+        case 'Home': //Home
+            $(currentItem).on('blur', function(){
+            	currentItem.removeClass('focused');
+            }); 
             currentList.first().addClass("focused").focus();
             e.preventDefault();
             break;
         default:
             clearTimeout(keyboardTimer);
             keyboardSearchString += e.key;
+            console.log(keyboardSearchString);
             keyboardTimer = setTimeout(function(){
                 var patt = new RegExp('^' + keyboardSearchString, 'i');
                 for (let i = 0; i < currentList.length; i++) {
                     currentText = $(currentList[i]).text()
                     if (patt.test(currentText)) {
-                        console.log("match found");
-                        currentItem.removeClass("focused");
+                        $(currentItem).on('blur', function(){
+		                	currentItem.removeClass('focused');
+		                }); 
                         $(currentList[i]).addClass("focused").focus();
                         break;
-                    } else {
-                        console.log("no match");
                     }
                 }
                 keyboardSearchString = "";
-            }, 500); 
+            }, 250); 
     }
 });
 $("[role=option]").on("focus", function (e) {
@@ -386,27 +421,27 @@ $(document).ready(function() {
     });
 
     //process spacebar and enter presses (accessibility)
-    $(".qfilter-option").keypress(function() {
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        if (keycode == '13' || keycode == '32'){
-            if ($(this).attr('aria-selected') == 'false') {
-                $(this).attr('aria-selected','true');
-            } else {
-                $(this).attr('aria-selected','false');
-            }
-            $(this).toggleClass('qfilter-selected');
-            sortFilter(this);
-            buildQuery();
-        }
-    });
+	$(".qfilter-option").on('keypress', function(e) {
+	    if (e.key === ' ' || e.key === 'Enter'){
+	        if ($(this).attr('aria-selected') == 'false') {
+	            $(this).attr('aria-selected','true');
+	        } else {
+	            $(this).attr('aria-selected','false');
+	        }
+	        $(this).toggleClass('qfilter-selected');
+	        sortFilter(this);
+	        buildQuery();
 
-    //process spacebar and enter presses (accessibility)
-    $(".qfilter-reset").keypress(function() {
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        if (keycode == '13' || keycode == '32'){
-            cancelAllFilters();
-        }
-    });
+	        e.preventDefault();
+	    }
+	});
+	$(".qfilter-reset").on('keypress', function(e) {
+	    if (e.key === ' ' || e.key === 'Enter'){
+	        cancelAllFilters();
+
+	        e.preventDefault();
+	    }
+	});
 
     //process reset filters clicks
     $('.qfilter-reset').click(function() {
