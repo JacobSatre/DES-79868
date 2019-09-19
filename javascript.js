@@ -19,20 +19,14 @@
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
 $('.qfilter-category-toggle').on('keypress', function(e){
-	if (e.key === " " || e.key === "Enter") {
+	console.log(e.key);
+	if ((e.key === " " || e.key === "Spacebar" || e.key === "Enter") && $(this).attr('aria-expanded') === "false") {
 		this.click();
-		console.log('toggle button clicked');
-		$(this).next().find('[role="listbox"]').focus();
 		e.preventDefault();
 	}
-});
-
-$('.qfilter-category-toggle').on('focus', function(e){
-	if ($(this).attr('aria-expanded') == "false") {
-		console.log('focused on a closed button');
-	} else {
-		console.log('focused on an open button');
-		$(this)
+	if (e.key === " " || e.key === "Spacebar") {
+		$(this).parent().find('[role="listbox"]').focus();
+		e.preventDefault();
 	}
 });
 //Accessibility Keyboard Controls
@@ -50,15 +44,8 @@ let keyboardTimer;
 $("[role=listbox]").on("keydown", function (e) {            
     var currentItem = $(this).find(".focused");
     var currentFilter = $(this).attr('data-filter');
-    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');  
+    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');
     switch (e.key) {
-    	case 'Escape':
-    		$(currentItem).on('blur', function(){
-            	currentItem.removeClass('focused');
-            });
-            console.log(currentItem);
-            break;
-
         case 'Tab':  //Tab
     		$(currentItem).on('blur', function(){
             	currentItem.removeClass('focused');
@@ -73,7 +60,25 @@ $("[role=listbox]").on("keydown", function (e) {
             }                    
             e.preventDefault();
             break;
-        case 'ArrowDown': // Dotwn arrow
+        case 'Up':  // Up arrow
+            if (currentItem.prev().length) {
+                $(currentItem).on('blur', function(){
+                	currentItem.removeClass('focused');
+                });                
+                currentItem.prev().addClass("focused").focus();
+            }                    
+            e.preventDefault();
+            break;
+        case 'ArrowDown': // Down arrow
+            if (currentItem.next().length) {
+                $(currentItem).on('blur', function(){
+                	currentItem.removeClass('focused');
+                }); 
+                currentItem.next().addClass("focused").focus();
+            }
+            e.preventDefault();
+            break;
+        case 'Down': // Down arrow
             if (currentItem.next().length) {
                 $(currentItem).on('blur', function(){
                 	currentItem.removeClass('focused');
@@ -422,7 +427,7 @@ $(document).ready(function() {
 
     //process spacebar and enter presses (accessibility)
 	$(".qfilter-option").on('keypress', function(e) {
-	    if (e.key === ' ' || e.key === 'Enter'){
+	    if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
 	        if ($(this).attr('aria-selected') == 'false') {
 	            $(this).attr('aria-selected','true');
 	        } else {
@@ -438,13 +443,12 @@ $(document).ready(function() {
 	$(".qfilter-reset").on('keypress', function(e) {
 	    if (e.key === ' ' || e.key === 'Enter'){
 	        cancelAllFilters();
-
 	        e.preventDefault();
 	    }
 	});
-
     //process reset filters clicks
     $('.qfilter-reset').click(function() {
+    	$('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
         cancelAllFilters();
     });
 
