@@ -18,20 +18,25 @@
   });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
-$('.qfilter-category-toggle').on('keypress', function(e){
-	console.log(e.key);
-	if ((e.key === " " || e.key === "Spacebar" || e.key === "Enter") && $(this).attr('aria-expanded') === "false") {
-		this.click();
-		e.preventDefault();
-	}
-	if (e.key === " " || e.key === "Spacebar") {
-		$(this).parent().find('[role="listbox"]').focus();
-		e.preventDefault();
-	}
+$('.qfilter-category-toggle').on('keydown', function(e){
+
+    if ($(this).attr('aria-expanded') === "false") {
+        if (e.key === " " || e.key === "Spacebar" || e.key === "ArrowDown" || e.key === "Down" || e.key === "Enter") {
+            this.click();
+            $(this).parent().find('[role="listbox"]').focus();
+            e.preventDefault();
+        }
+    } else {
+        if (e.key === " " || e.key === "Spacebar" || e.key === "ArrowDown" || e.key === "Down") {
+            $(this).parent().find('[role="listbox"]').focus();
+            e.preventDefault();
+        }
+    }
+
 });
 //Accessibility Keyboard Controls
 $("[role=listbox]").on("focus", function () {
-	console.log('focused on a listbox');
+    console.log('focused on a listbox');
    // If no selected element, select the first by default
    if (!$(this).find(".qfilter-selected").length) {               
         $(this).find("[role=option]:first").addClass("focused").focus();
@@ -47,14 +52,14 @@ $("[role=listbox]").on("keydown", function (e) {
     var currentList = $('.qfilter-option[data-filter='+currentFilter+']');
     switch (e.key) {
         case 'Tab':  //Tab
-    		$(currentItem).on('blur', function(){
-            	currentItem.removeClass('focused');
+            $(currentItem).on('blur', function(){
+                currentItem.removeClass('focused');
             });
             break;
         case 'ArrowUp':  // Up arrow
             if (currentItem.prev().length) {
                 $(currentItem).on('blur', function(){
-                	currentItem.removeClass('focused');
+                    currentItem.removeClass('focused');
                 });                
                 currentItem.prev().addClass("focused").focus();
             }                    
@@ -63,7 +68,7 @@ $("[role=listbox]").on("keydown", function (e) {
         case 'Up':  // Up arrow
             if (currentItem.prev().length) {
                 $(currentItem).on('blur', function(){
-                	currentItem.removeClass('focused');
+                    currentItem.removeClass('focused');
                 });                
                 currentItem.prev().addClass("focused").focus();
             }                    
@@ -72,7 +77,7 @@ $("[role=listbox]").on("keydown", function (e) {
         case 'ArrowDown': // Down arrow
             if (currentItem.next().length) {
                 $(currentItem).on('blur', function(){
-                	currentItem.removeClass('focused');
+                    currentItem.removeClass('focused');
                 }); 
                 currentItem.next().addClass("focused").focus();
             }
@@ -81,7 +86,7 @@ $("[role=listbox]").on("keydown", function (e) {
         case 'Down': // Down arrow
             if (currentItem.next().length) {
                 $(currentItem).on('blur', function(){
-                	currentItem.removeClass('focused');
+                    currentItem.removeClass('focused');
                 }); 
                 currentItem.next().addClass("focused").focus();
             }
@@ -89,14 +94,14 @@ $("[role=listbox]").on("keydown", function (e) {
             break;
         case 'End': //End
             $(currentItem).on('blur', function(){
-            	currentItem.removeClass('focused');
+                currentItem.removeClass('focused');
             }); 
             currentList.last().addClass("focused").focus();
             e.preventDefault();
             break;
         case 'Home': //Home
             $(currentItem).on('blur', function(){
-            	currentItem.removeClass('focused');
+                currentItem.removeClass('focused');
             }); 
             currentList.first().addClass("focused").focus();
             e.preventDefault();
@@ -111,8 +116,8 @@ $("[role=listbox]").on("keydown", function (e) {
                     currentText = $(currentList[i]).text()
                     if (patt.test(currentText)) {
                         $(currentItem).on('blur', function(){
-		                	currentItem.removeClass('focused');
-		                }); 
+                            currentItem.removeClass('focused');
+                        }); 
                         $(currentList[i]).addClass("focused").focus();
                         break;
                     }
@@ -426,29 +431,29 @@ $(document).ready(function() {
     });
 
     //process spacebar and enter presses (accessibility)
-	$(".qfilter-option").on('keypress', function(e) {
-	    if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
-	        if ($(this).attr('aria-selected') == 'false') {
-	            $(this).attr('aria-selected','true');
-	        } else {
-	            $(this).attr('aria-selected','false');
-	        }
-	        $(this).toggleClass('qfilter-selected');
-	        sortFilter(this);
-	        buildQuery();
+    $(".qfilter-option").on('keypress', function(e) {
+        if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
+            if ($(this).attr('aria-selected') == 'false') {
+                $(this).attr('aria-selected','true');
+            } else {
+                $(this).attr('aria-selected','false');
+            }
+            $(this).toggleClass('qfilter-selected');
+            sortFilter(this);
+            buildQuery();
 
-	        e.preventDefault();
-	    }
-	});
-	$(".qfilter-reset").on('keypress', function(e) {
-	    if (e.key === ' ' || e.key === 'Enter'){
-	        cancelAllFilters();
-	        e.preventDefault();
-	    }
-	});
+            e.preventDefault();
+        }
+    });
+    $(".qfilter-reset").on('keypress', function(e) {
+        if (e.key === ' ' || e.key === 'Enter'){
+            cancelAllFilters();
+            e.preventDefault();
+        }
+    });
     //process reset filters clicks
     $('.qfilter-reset').click(function() {
-    	$('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
+        $('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
         cancelAllFilters();
     });
 
