@@ -18,8 +18,8 @@
   });
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
+//Accessibility Keyboard Controls
 $('.qfilter-category-toggle').on('keydown', function(e){
-
     if ($(this).attr('aria-expanded') === "false") {
         if (e.key === " " || e.key === "Spacebar" || e.key === "ArrowDown" || e.key === "Down" || e.key === "Enter") {
             this.click();
@@ -32,11 +32,9 @@ $('.qfilter-category-toggle').on('keydown', function(e){
             e.preventDefault();
         }
     }
-
 });
-//Accessibility Keyboard Controls
+
 $("[role=listbox]").on("focus", function () {
-    console.log('focused on a listbox');
    // If no selected element, select the first by default
    if (!$(this).find(".qfilter-selected").length) {               
         $(this).find("[role=option]:first").addClass("focused").focus();
@@ -44,12 +42,13 @@ $("[role=listbox]").on("focus", function () {
        $(this).find(".qfilter-selected:first").addClass('focused').focus();
    }
 });
+
 let keyboardSearchString = "";
 let keyboardTimer;
 $("[role=listbox]").on("keydown", function (e) {            
-    var currentItem = $(this).find(".focused");
-    var currentFilter = $(this).attr('data-filter');
-    var currentList = $('.qfilter-option[data-filter='+currentFilter+']');
+    let currentItem = $(this).find(".focused");
+    let currentFilter = $(this).attr('data-filter');
+    let currentList = $('.qfilter-option[data-filter='+currentFilter+']');
     switch (e.key) {
         case 'Tab':  //Tab
             $(currentItem).on('blur', function(){
@@ -106,15 +105,22 @@ $("[role=listbox]").on("keydown", function (e) {
             currentList.first().addClass("focused").focus();
             e.preventDefault();
             break;
+        case 'Escape': //Escape
+            $(currentItem).parents('.qfilter-category').find('.qfilter-category-toggle').click().focus();
+            e.preventDefault();
+            break;
+        case 'Esc': //Escape
+            $(currentItem).parents('.qfilter-category').find('.qfilter-category-toggle').click().focus();
+            e.preventDefault();
+            break;
         default:
             clearTimeout(keyboardTimer);
             keyboardSearchString += e.key;
-            console.log(keyboardSearchString);
             keyboardTimer = setTimeout(function(){
-                var patt = new RegExp('^' + keyboardSearchString, 'i');
+                let filterText = new RegExp('^' + keyboardSearchString, 'i');
                 for (let i = 0; i < currentList.length; i++) {
-                    currentText = $(currentList[i]).text()
-                    if (patt.test(currentText)) {
+                    let currentText = $(currentList[i]).text();
+                    if (filterText.test(currentText)) {
                         $(currentItem).on('blur', function(){
                             currentItem.removeClass('focused');
                         }); 
@@ -126,6 +132,7 @@ $("[role=listbox]").on("keydown", function (e) {
             }, 250); 
     }
 });
+
 $("[role=option]").on("focus", function (e) {
    $(this).parent().attr("tabindex", "-1");
 });
@@ -429,8 +436,6 @@ $(document).ready(function() {
         sortFilter(this);
         buildQuery();
     });
-
-    //process spacebar and enter presses (accessibility)
     $(".qfilter-option").on('keypress', function(e) {
         if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
             if ($(this).attr('aria-selected') == 'false') {
@@ -445,18 +450,19 @@ $(document).ready(function() {
             e.preventDefault();
         }
     });
+
+    //process reset filters clicks
+    $('.qfilter-reset').click(function() {
+        $('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
+        cancelAllFilters();
+    });
     $(".qfilter-reset").on('keypress', function(e) {
         if (e.key === ' ' || e.key === 'Enter'){
             cancelAllFilters();
             e.preventDefault();
         }
     });
-    //process reset filters clicks
-    $('.qfilter-reset').click(function() {
-        $('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
-        cancelAllFilters();
-    });
-
+    
     //gather override filters
     for (let i = 0; i < overrideList.length; i++) {
         sortFilter(overrideList[i], true);
