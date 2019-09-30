@@ -34,7 +34,7 @@ $('.qfilter-category-toggle').on('keydown', function(e){
     }
 });
 
-$("[role=listbox]").on("focus", function () {
+$(".quickFilterSearch [role=listbox]").on("focus", function () {
    // If no selected element, select the first by default
    if (!$(this).find(".qfilter-selected").length) {               
         $(this).find("[role=option]:first").addClass("focused").focus();
@@ -45,7 +45,7 @@ $("[role=listbox]").on("focus", function () {
 
 let keyboardSearchString = "";
 let keyboardTimer;
-$("[role=listbox]").on("keydown", function (e) {            
+$(".quickFilterSearch [role=listbox]").on("keydown", function (e) {            
     let currentItem = $(this).find(".focused");
     let currentFilter = $(this).attr('data-filter');
     let currentList = $('.qfilter-option[data-filter='+currentFilter+']');
@@ -133,11 +133,11 @@ $("[role=listbox]").on("keydown", function (e) {
     }
 });
 
-$("[role=option]").on("focus", function (e) {
+$(".quickFilterSearch [role=option]").on("focus", function (e) {
    $(this).parent().attr("tabindex", "-1");
 });
 
-$("[role=option]").on("blur", function (e) {
+$(".quickFilterSearch [role=option]").on("blur", function (e) {
    $(this).parent().attr("tabindex", "0");
 });
 
