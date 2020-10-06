@@ -48,7 +48,7 @@ let keyboardTimer;
 $(".quickFilterSearch [role=listbox]").on("keydown", function (e) {            
     let currentItem = $(this).find(".focused");
     let currentFilter = $(this).attr('data-filter');
-    let currentList = $('.qfilter-option[data-filter='+currentFilter+']');
+    let currentList = $('.qfilter-button[data-filter='+currentFilter+']');
     switch (e.key) {
         case 'Tab':  /* Tab */
             $(currentItem).on('blur', function(){
@@ -146,7 +146,6 @@ $(document).ready(function(){
 
     let submitList = $('.qfilter-submit'),
         href = $('.qfilter-submit').attr('href'),
-        optionList = $('.qfilter-option'),
         overrideList = $('.qfilter-override'),
         categoryCount = $('.qfilter-categorycount'),
         inventoryCount = $('.qfilter-inventorycount');
@@ -175,6 +174,80 @@ $(document).ready(function(){
             "special": []
         },
         "selectedCount": 0,
+        sortOption: function(button, override) {
+
+            let buttonCategory = button.dataset.filter;
+            let buttonValue = button.dataset.value;
+            let buttonText = button.textContent;
+            console.log("category is " + buttonCategory);
+            console.log(qfilter.category[buttonCategory]);
+
+            if (!qfilter.category[buttonCategory].includes(buttonValue)) {
+
+                qfilter.category[buttonCategory].push(buttonValue);
+
+                let categoryLength = qfilter.category[buttonCategory].length;
+                
+                if (override != true) {
+                    qfilter.selectedCount++;
+                    addElementSelection(buttonText, buttonValue, buttonCategory, categoryLength);
+                    updateElementCount(buttonCategory, categoryLength);
+                }
+
+
+            } else {
+
+                qfilter.selectedCount--;
+                qfilter.category[buttonCategory] = qfilter.category[buttonCategory].filter(function(value){return value != buttonValue;});
+
+                let categoryLength = qfilter.category[buttonCategory].length;
+
+                removeElementSelection(buttonValue, buttonCategory, categoryLength);
+                updateElementCount(buttonCategory, categoryLength);
+
+            }
+        },
+        buildQuery: function(){
+
+            let queryString = "";
+            let beginBuild = false;
+            let keys = qfilter.getKeys();
+
+            /* interate through each category */
+            for (let i = 0; i < keys.length; i++) {
+
+                let array = qfilter.getArray(i);
+                if (array.length > 0) {
+
+                    /* place correct character between categories */
+                    if (beginBuild == false) {
+                        queryString += "?";
+                        beginBuild = true;
+                    } else {
+                        queryString += "&";
+                    }
+
+                    /* compile filter values */
+                    let filterValues = "";
+                    let beginCount = false;
+                    for (let n = 0; n < array.length; n++) {
+                        if (beginCount == true) {
+                            filterValues += ",";
+                        }
+                        filterValues += array[n];
+                        beginCount = true;
+                    }
+
+                    /* add category name and filter values to querystring */
+                    queryString += keys[i] + "=" + filterValues;
+                }
+            }
+
+            /* encode URL */
+            queryString = encodeURI(queryString);
+
+            return queryString;
+        },
         getArray: function(index){
             let arrays = Object.values(qfilter.category);
             return arrays[index];
@@ -184,84 +257,151 @@ $(document).ready(function(){
         }
     }
 
-    qfilter.sortOption = function(option, override) {
+    function getButtons() {
+        queryString = qfilter.buildQuery();
 
-        let buttonCategory = option.dataset.filter;
-        let buttonValue = option.dataset.value;
-        let buttonText = option.textContent;
+        let apiString = api + queryString;
 
-        if (!this.category[buttonCategory].includes(buttonValue)) {
+        let testData = $.ajax({
+            url: apiString,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json'
+        }).done(function() {
 
-            this.selectedCount++;
+            let categoryList = $('.qfilter-button-container');
 
-            this.category[buttonCategory].push(buttonValue);
-
-            let categoryLength = this.category[buttonCategory].length;
-            
-            if (override != true) {
-                qfilter.addElementSelection(buttonText, buttonValue, buttonCategory, categoryLength);
-                qfilter.updateElementCount(buttonCategory, categoryLength);
+            for (let i = 0; i < categoryList.length; i++) {
+                let categoryFilter = $(categoryList[i]).attr('data-filter');
+                if (categoryFilter == "type") {
+                    addButton(categoryList[i], "type", "n", "New");
+                    addButton(categoryList[i], "type", "u", "Used");
+                } else if (categoryFilter == "year") {
+                    let optionList = Object.keys(testData.responseJSON.YearBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "year", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "model") {
+                    let optionList = Object.keys(testData.responseJSON.ModelBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "model", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "make") {
+                    let optionList = Object.keys(testData.responseJSON.MakeBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "make", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "bodytype") {
+                    let optionList = Object.keys(testData.responseJSON.BodyTypeBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "bodytype", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "fueltype") {
+                    let optionList = Object.keys(testData.responseJSON.FueltypeBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "fueltype", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "extcolor") {
+                    let optionList = Object.keys(testData.responseJSON.ExtColorBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "extcolor", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "transmission") {
+                    let optionList = Object.keys(testData.responseJSON.TransmissionBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "transmission", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "features") {
+                    let optionList = Object.keys(testData.responseJSON.FeaturesBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "features", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "cylinders") {
+                    let optionList = Object.keys(testData.responseJSON.CylinderBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "cylinders", optionList[n]);
+                    }
+                }
+                else if (categoryFilter == "drivetraintype") {
+                    let optionList = Object.keys(testData.responseJSON.DrivetrainTypeBuckets);
+                    for (let n = 0; n < optionList.length; n++) {
+                        addButton(categoryList[i], "drivetraintype", optionList[n]);
+                    }
+                }
             }
 
+            /* process option clicks */
+            $('.qfilter-button').click(function() {
+                console.log("button clicked");
+                if ($(this).attr('aria-selected') == 'false') {
+                    $(this).attr('aria-selected','true');
+                } else {
+                    $(this).attr('aria-selected','false');
+                }
+                $(this).toggleClass('qfilter-selected');
+                qfilter.sortOption(this, false);
+                getResults();
+            });
+            $('.qfilter-button').on('keypress', function(e) {
+                console.log("button clicked");
+                if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
+                    if ($(this).attr('aria-selected') == 'false') {
+                        $(this).attr('aria-selected','true');
+                    } else {
+                        $(this).attr('aria-selected','false');
+                    }
+                    $(this).toggleClass('qfilter-selected');
+                    qfilter.sortOption(this, false);
+                    getResults();
 
-        } else {
-
-            this.selectedCount--;
-            this.category[buttonCategory] = this.category[buttonCategory].filter(function(value){
-                return value != buttonValue;
+                    e.preventDefault();
+                }
             });
 
-            let categoryLength = qfilter.category[buttonCategory].length;
+            console.log('buttons have been generated');
 
-            qfilter.removeElementSelection(buttonValue, buttonCategory, categoryLength);
-            qfilter.updateElementCount(buttonCategory, categoryLength);
+            getResults();
 
-        }
+        }).fail(function() {
+
+            console.log( "Unable to retrieve inventory count from " + APIurl );
+
+        }).always(function() {
+        });
     }
 
-    /* builds query string */
-    qfilter.buildQuery = function(){
+    function addButton(parent, filter, value, text) {
+        let option = document.createElement("li");
 
-        let queryString = "";
-        let beginBuild = false;
-        let keys = qfilter.getKeys();
+        option.setAttribute('class','qfilter-button text-cta');
+        option.setAttribute('data-filter', filter);
+        option.setAttribute('data-value', value);
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.setAttribute('tabindex', '-1');
 
-        /* interate through each category */
-        for (let i = 0; i < keys.length; i++) {
-
-            let array = qfilter.getArray(i);
-            if (array.length > 0) {
-
-                /* place correct character between categories */
-                if (beginBuild == false) {
-                    queryString += "?";
-                    beginBuild = true;
-                } else {
-                    queryString += "&";
-                }
-
-                /* compile filter values */
-                let filterValues = "";
-                let beginCount = false;
-                for (let n = 0; n < array.length; n++) {
-                    if (beginCount == true) {
-                        filterValues += ",";
-                    }
-                    filterValues += array[n];
-                    beginCount = true;
-                }
-
-                /* add category name and filter values to querystring */
-                queryString += keys[i] + "=" + filterValues;
-            }
+        if (text) {
+            optiontext = document.createTextNode(text);
+        } else {
+            optiontext = document.createTextNode(value);
         }
+        option.appendChild(optiontext);
+        parent.appendChild(option);
+    }
 
-        /* encode URL */
-        queryString = encodeURI(queryString);
+    function getResults() {
 
-        console.log(queryString);
+        queryString = qfilter.buildQuery();
 
-        let apiString = "/api/v2/search/16790/filter" + queryString;
+        let apiString = api + queryString;
 
         /* add class until api request is returned */
         $(inventoryCount).addClass('qfilter-waitingapi');
@@ -302,10 +442,12 @@ $(document).ready(function(){
 
         /* update qfilter selected count */
         $('.quickFilterSearch').attr('data-selected',qfilter.selectedCount);
+
+        console.log("results have been returned");
     }
 
     /* adds current selections to the page as DOM elements */
-    qfilter.addElementSelection = function(name, value, category, categoryLength) {
+    function addElementSelection(name, value, category, categoryLength) {
 
         /* define element ids */
         let valueid = "qfilter-current" + "-" + category + "-" + encodeURIComponent(value);
@@ -335,7 +477,7 @@ $(document).ready(function(){
         valueelement.setAttribute('data-filter', category);
         valueelement.setAttribute('data-value', value);
         valueelement.appendChild(valuecontent);
-        valueelement.addEventListener("click", function() { qfilter.cancelElementSelection(this); });
+        valueelement.addEventListener("click", function() { cancelElementSelection(this); });
 
         /* add correct element(s) */
         if (categoryLength == 1) {
@@ -348,7 +490,7 @@ $(document).ready(function(){
     }
 
     /* removes current selections DOM elements from page */
-    qfilter.removeElementSelection = function(value, category, categoryLength) {
+    function removeElementSelection(value, category, categoryLength) {
 
         /* define element ids */
         let valueid = "qfilter-current" + "-" + category + "-" + encodeURIComponent(value);
@@ -360,7 +502,7 @@ $(document).ready(function(){
 
         /* value (child element) */
         let valueelement = document.getElementById(valueid);
-        valueelement.removeEventListener("click", function() { qfilter.cancelElementSelection(this); });
+        valueelement.removeEventListener("click", function() { cancelElementSelection(this); });
 
         /* remove correct element(s) */
         if (categoryLength == 0) {
@@ -371,35 +513,35 @@ $(document).ready(function(){
     }
 
     /* click to remove current filters */
-    qfilter.cancelElementSelection = function(option){
-
-        let value = option.dataset.value;
-        let filter = option.dataset.filter;
+    function cancelElementSelection(button){
+        let selectedList = $('.qfilter-selected');
+        let value = button.dataset.value;
+        let filter = button.dataset.filter;
 
         /* remove selected class from the correct option button */
-        for (let i = 0; i < optionList.length; i++) {
-            if (optionList[i].dataset.value.toUpperCase() == value.toUpperCase() && optionList[i].dataset.filter.toUpperCase() == filter.toUpperCase()) {
-                $(optionList[i]).removeClass('qfilter-selected');
-                $(optionList[i]).attr('aria-selected','false');
+        for (let i = 0; i < selectedList.length; i++) {
+            if (selectedList[i].dataset.value == value && selectedList[i].dataset.filter == filter) {
+                $(selectedList[i]).removeClass('qfilter-selected');
+                $(selectedList[i]).attr('aria-selected','false');
             }
         }
 
-        qfilter.sortOption(option, false);
-        qfilter.buildQuery();
+        qfilter.sortOption(button, false);
+        getResults();
     }
 
-    qfilter.cancelAllFilters = function() {
+    function clearFilters() {
         let currentFilters = $('.qfilter-selected');
         for (let i = 0; i < currentFilters.length; i++) {
             qfilter.sortOption(currentFilters[i], false);
             $(currentFilters[i]).removeClass('qfilter-selected');
             $(currentFilters[i]).attr('aria-selected','false');
         }
-        qfilter.buildQuery();
+        getResults();
     }
 
     /* updates category count elements */
-    qfilter.updateElementCount = function(category, categoryLength) {
+    function updateElementCount(category, categoryLength) {
         for (let i = 0; i < categoryCount.length; i++) {
             if (categoryCount[i].dataset.filter.toUpperCase() == category.toUpperCase()) {
                 if (categoryLength > 0) {
@@ -411,40 +553,16 @@ $(document).ready(function(){
         }
     }
 
-    /* process option clicks */
-    $('.qfilter-option').click(function() {
-        if ($(this).attr('aria-selected') == 'false') {
-            $(this).attr('aria-selected','true');
-        } else {
-            $(this).attr('aria-selected','false');
-        }
-        $(this).toggleClass('qfilter-selected');
-        qfilter.sortOption(this, false);
-        qfilter.buildQuery();
-    });
-    $(".qfilter-option").on('keypress', function(e) {
-        if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter'){
-            if ($(this).attr('aria-selected') == 'false') {
-                $(this).attr('aria-selected','true');
-            } else {
-                $(this).attr('aria-selected','false');
-            }
-            $(this).toggleClass('qfilter-selected');
-            qfilter.sortOption(this, false);
-            qfilter.buildQuery();
-
-            e.preventDefault();
-        }
-    });
-
     /* process reset filters clicks */
     $('.qfilter-reset').click(function() {
+        console.log("reset button clicked");
         $('#qfilter-buttons').find('.qfilter-category-toggle').first().focus();
-        qfilter.cancelAllFilters();
+        clearFilters();
     });
     $(".qfilter-reset").on('keypress', function(e) {
+        console.log("reset button clicked");
         if (e.key === ' ' || e.key === 'Enter'){
-            qfilter.cancelAllFilters();
+            clearFilters();
             e.preventDefault();
         }
     });
@@ -452,7 +570,8 @@ $(document).ready(function(){
     /* gather override filters */
     for (let i = 0; i < overrideList.length; i++) {
         qfilter.sortOption(overrideList[i], true);
-        qfilter.buildQuery();
+        $('.qfilter-button-container[data-filter='+overrideList[i].dataset.filter+']').parents('.qfilter-category').remove();
+
     }
 
     /* prevent search if button is disabled */
@@ -462,7 +581,5 @@ $(document).ready(function(){
         }
     });
 
-    /* initial query */
-    qfilter.buildQuery();
-    console.log("building initial query");
+    getButtons();
 });
